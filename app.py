@@ -1,88 +1,46 @@
-import streamlit as st
-import pandas as pd
+from flask import Flask, render_template, request
+import openpyxl
+from collections import defaultdict
 
-# Set the page configuration
-st.set_page_config(page_title="ICD-O Code Browser", layout="wide")
+app = Flask(__name__)
 
-# Load the Excel file
-@st.cache_data
-def load_data():
-    try:
-        df = pd.read_excel('C:/Users/user/Downloads/chatbot/icd/pregnancy ICD10-1.xlsx')
-        return df
-    except FileNotFoundError:
-        st.error("Error: Excel file not found.")
-        return None
-    except Exception as e:
-        st.error(f"Error: {e}")
-        return None
+# Load the Excel file once when the app starts
+workbook = openpyxl.load_workbook('C:\\Users\\Asus\\Desktop\\term 6 exam\\test2\\pregnancy1.xlsx')
+sheet = workbook.active
+data = defaultdict(str)
 
-# Main application
-def main():
-    st.title("ICD-O Code Browser")
+# Preprocess the Excel data for faster searching
+for row in range(2, sheet.max_row + 1):
+    code = sheet.cell(row=row, column=1).value
+    explanation = sheet.cell(row=row, column=2).value
+    if code is not None and explanation is not None:
+        if code not in data:
+            data[code] = ""
+        if data[code]:
+            data[code] += "\n\n"
+        data[code] += explanation
 
-    # Load the data from the Excel file
-    df = load_data()
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-    if df is not None:
-        # Introduction section
-        st.header("Introduction to ICD-O")
-        st.write("The International Classification of Diseases for pregnancy (ICD-O) is a system used for coding and classifying pregnancy diagnoses.")
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
-        # Download the PDF file
-        st.write("### Download the alphabetic list")
-        st.download_button(
-            label="Download PDF",
-            data=open('C:/Users/user/Downloads/book-3-icd-94-2blak-581-586.pdf', 'rb').read(),
-            file_name="book-3-pregnancy.pdf",
-            mime="application/pdf"
-        )
+@app.route('/download_pdf')
+def download_pdf():
+    pdf_url = 'https://beamingnp.github.io/data/book-3-pregnancy.pdf'
+    return render_template('index.html', pdf_url=pdf_url)
 
-        # Alphabetic list and search bar section
-        st.header("Browse ICD-O Codes")
+@app.route('/search_code', methods=['POST'])
+def search_code():
+    search_term = request.form['search_term'].upper()
+    if search_term in data:
+        results = [{"code": search_term, "explanation": data[search_term]}]
+    else:
+        results = []
+    return render_template('index.html', results=results)
 
-        # Create a selectbox for the user to choose a column
-        selected_column = st.selectbox("Select a column to browse:", ["Code", "Persian", "Explanation"])
-
-        # Create a search bar for the user to enter a keyword
-        search_keyword = st.text_input(f"Enter a keyword to search in column '{selected_column}':")
-
-        # Initialize the filtered DataFrame
-        filtered_df = pd.DataFrame()
-
-        # Filter the DataFrame based on the user's search
-        if search_keyword:
-            if selected_column == "Code":
-                filtered_df = df[df["Code"].str.contains(search_keyword, case=False, na=False)]
-                filtered_df = filtered_df.dropna(subset=["Code"])  # Remove rows with null values in the "Code" column
-            else:
-                filtered_df = df[df[selected_column].str.contains(search_keyword, case=False, na=False)]
-
-        # Display the results
-        if not filtered_df.empty:
-            st.write("Results:")
-            combined_explanations = {}
-            for index, row in filtered_df.iterrows():
-                code = row['Code']
-                if code not in combined_explanations:
-                    combined_explanations[code] = {
-                        'Persian': [],
-                        'Explanation': []
-                    }
-                if not pd.isna(row['Persian']):
-                    combined_explanations[code]['Persian'].append(row['Persian'])
-                combined_explanations[code]['Explanation'].append(row['Explanation'])
-            for code, explanations in combined_explanations.items():
-                st.write(f"### Code: {code}")
-                if explanations['Persian']:
-                    st.write("### Persian:")
-                    for persian in explanations['Persian']:
-                        st.write(f"{persian}")
-                st.write("### Explanation:")
-                for explanation in explanations['Explanation']:
-                    st.write(f"{explanation}")
-                st.write("---")
-        else:
-            st.write(f"No results found for '{search_keyword}' in column '{selected_column}'.")
-
-main()
+if __name__ == '__main__':
+    app.run(debug=True)
