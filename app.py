@@ -32,14 +32,21 @@ def about():
 def download_pdf():
     return send_file('/workspaces/website/book-3-pregnancy.pdf', as_attachment=True)
 
-@app.route('/search_code', methods=['POST'])
+@app.route('/search_code', methods=['GET', 'POST'])
 def search_code():
-    search_term = request.form['search_term'].upper()
-    if search_term in data:
-        results = [{"code": search_term, "explanation": data[search_term]}]
+    if request.method == 'POST':
+        search_term = request.form['search_term'].upper()
+        if search_term in data:
+            results = [{"code": search_term, "explanation": data[search_term]}]
+        else:
+            results = []
+        return render_template('index.html', results=results)
     else:
-        results = []
-    return render_template('index.html', results=results)
+        return render_template('index.html')
+
+@app.errorhandler(405)
+def method_not_allowed(error):
+    return render_template('error.html', error_message='Method Not Allowed'), 405
 
 if __name__ == '__main__':
     app.run(debug=True)
