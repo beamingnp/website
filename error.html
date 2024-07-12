@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container my-5">
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Error {{ error_message }}</h4>
+            <p>An error occurred while processing your request. Please try again later or contact our support team for assistance.</p>
+        </div>
+        <p>
+            In the meantime, you can <a href="{{ url_for('download_pdf') }}">download the PDF</a> or <a href="{{ url_for('about') }}">visit our About page</a>.
+        </p>
+    </div>
+</body>
+</html>
