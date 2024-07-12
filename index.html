@@ -47,7 +47,12 @@
                 </div>
             {% endfor %}
         {% elif request.method == 'POST' %}
-            <p>No results found.</p>
+            <div class="alert alert-danger" role="alert">
+                Sorry, the search operation failed. The server is not allowing the POST method for this endpoint.
+            </div>
+            <p>
+                In the meantime, you can <a href="{{ url_for('download_pdf') }}">download the PDF</a> or <a href="{{ url_for('about') }}">contact our support team</a> for assistance.
+            </p>
         {% endif %}
     </div>
 
