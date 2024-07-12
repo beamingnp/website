@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, send_file, request
 import openpyxl
 from collections import defaultdict
 
 app = Flask(__name__)
 
 # Load the Excel file once when the app starts
-workbook = openpyxl.load_workbook('https://github.com/beamingnp/website/blob/79dccfa57dd68e8b3cb04f18e3236b97c545f75b/pregnancy1.xlsx')
+workbook = openpyxl.load_workbook('/workspaces/website/pregnancy1.xlsx')
 sheet = workbook.active
 data = defaultdict(str)
 
@@ -30,8 +30,7 @@ def about():
 
 @app.route('/download_pdf')
 def download_pdf():
-    pdf_url = 'https://github.com/beamingnp/website/blob/79dccfa57dd68e8b3cb04f18e3236b97c545f75b/book-3-pregnancy.pdf'
-    return render_template('index.html', pdf_url=pdf_url)
+    return send_file('/workspaces/website/book-3-pregnancy.pdf', as_attachment=True)
 
 @app.route('/search_code', methods=['POST'])
 def search_code():
