@@ -30,7 +30,7 @@
         
         <p>If you want to use the alphabetical list of codes and explanations, please <a href="{{ url_for('download_pdf') }}">download the PDF</a>.</p>
         
-        <form action="{{ url_for('index') }}" method="get" class="form-inline mb-4">
+        <form action="{{ url_for('search') }}" method="get" class="form-inline mb-4">
             <label for="search_term" class="mr-2">Search for codes and explanations:</label>
             <input type="text" id="search_term" name="search_term" class="form-control mr-2" required>
             <button type="submit" class="btn btn-primary">Search</button>
