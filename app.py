@@ -5,7 +5,7 @@ from collections import defaultdict
 app = Flask(__name__)
 
 # Load the Excel file once when the app starts
-workbook = openpyxl.load_workbook('C:\\Users\\Asus\\Desktop\\term 6 exam\\test2\\pregnancy1.xlsx')
+workbook = openpyxl.load_workbook('https://github.com/beamingnp/website/blob/79dccfa57dd68e8b3cb04f18e3236b97c545f75b/pregnancy1.xlsx')
 sheet = workbook.active
 data = defaultdict(str)
 
@@ -30,7 +30,7 @@ def about():
 
 @app.route('/download_pdf')
 def download_pdf():
-    pdf_url = 'https://beamingnp.github.io/data/book-3-pregnancy.pdf'
+    pdf_url = 'https://github.com/beamingnp/website/blob/79dccfa57dd68e8b3cb04f18e3236b97c545f75b/book-3-pregnancy.pdf'
     return render_template('index.html', pdf_url=pdf_url)
 
 @app.route('/search_code', methods=['POST'])
