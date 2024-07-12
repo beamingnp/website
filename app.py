@@ -44,5 +44,9 @@ def search_code():
     else:
         return render_template('index.html')
 
+@app.errorhandler(405)
+def method_not_allowed(error):
+    return render_template('error.html', error_message='Method Not Allowed'), 405
+
 if __name__ == '__main__':
     app.run(debug=True)
